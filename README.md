@@ -13,7 +13,7 @@ Describes the contract in English language.
 
 The source in Restructured text is in `ABL-spec-prose.rst`
 
-## Specification in [TLA+](http://lamport.azurewebsites.net/tla/tla.html)
+## Specification in [TLA+](https://lamport.azurewebsites.net/tla/tla.html)
 
 Can be found in `ABL_with_partial_repayments.tla`.
 
