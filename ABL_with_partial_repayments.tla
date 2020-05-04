@@ -52,22 +52,21 @@ RegularRepaymentAmount == D + ApplyRate(D, RateDue)
                                             state.m)
 
 RegularRepayment ==
-    LET Repayment == RegularRepaymentAmount
-    IN /\ total_repaid' = total_repaid + RegularRepaymentAmount
-       /\ state' = [n |-> state.n + 1,
-                    m |-> 0,
-                    B |-> state.B - D,
-                    path |-> state.path \o ">",
-                    at_block |-> block,
-                    custody |-> IF state.B = D THEN "Debtor" ELSE state.custody]
+   /\ total_repaid' = total_repaid + RegularRepaymentAmount
+   /\ state' = [n |-> state.n + 1,
+                m |-> 0,
+                B |-> state.B - D,
+                path |-> state.path \o ">",
+                at_block |-> block,
+                custody |-> IF state.B = D THEN "Debtor" ELSE state.custody]
 
-       \* Path len = period when always only one transition per period happens
-       \* Can use this code to generate the normal state transition table
-       \*
-       \* /\ IF Len(state.path) = PeriodOf(block)
-       \*    THEN Print(<<"RR", PeriodOf(block), state.n, state.m, state.path,
-       \*                  Repayment>>, TRUE)
-       \*    ELSE TRUE
+   \* Path len = period when always only one transition per period happens
+   \* Can use this code to generate the normal state transition table
+   \*
+   \* /\ IF Len(state.path) = PeriodOf(block)
+   \*    THEN Print(<<"RR", PeriodOf(block), state.n, state.m, state.path,
+   \*                  RegularRepaymentAmount>>, TRUE)
+   \*    ELSE TRUE
     
 EarlyRepaymentAmount == state.B + ApplyRate(D, RateDue)
                                 + ApplyRate((state.B-D), RateEarly)
@@ -75,19 +74,18 @@ EarlyRepaymentAmount == state.B + ApplyRate(D, RateDue)
                                                 state.m)
 
 EarlyRepayment ==
-    LET Repayment == EarlyRepaymentAmount
-    IN  /\ total_repaid' = total_repaid + EarlyRepaymentAmount
-        /\ state' = [state EXCEPT !.B = 0,
-                                  !.path = state.path \o "!",
-                                  !.custody = "Debtor"]
+    /\ total_repaid' = total_repaid + EarlyRepaymentAmount
+    /\ state' = [state EXCEPT !.B = 0,
+                              !.path = state.path \o "!",
+                              !.custody = "Debtor"]
 
-        \* Path len = period when always only one transition per period happens
-        \* Can use this code to generate the normal state transition table
-        \*
-        \* /\ IF Len(state.path) = PeriodOf(block)
-        \*    THEN Print(<<"ER", PeriodOf(block), state.n, state.m, state.path,
-        \*                 EarlyRepaymentAmount>>, TRUE)
-        \*    ELSE TRUE
+    \* Path len = period when always only one transition per period happens
+    \* Can use this code to generate the normal state transition table
+    \*
+    \* /\ IF Len(state.path) = PeriodOf(block)
+    \*    THEN Print(<<"ER", PeriodOf(block), state.n, state.m, state.path,
+    \*                 EarlyRepaymentAmount>>, TRUE)
+    \*    ELSE TRUE
 
 Enforcement ==
     IF PeriodOf(block) /= PeriodOf(state.at_block)
