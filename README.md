@@ -13,11 +13,9 @@ Describes the contract in English language.
 
 The source in Restructured text is in `ABL-spec-prose.rst`
 
-## TLA+ Specification
+## Specification in [TLA+](http://lamport.azurewebsites.net/tla/tla.html)
 
 Can be found in `ABL_with_partial_repayments.tla`.
-
-Implements the specification in TLA+ specification language.
 
 Default values for constants can be found in `MC.tla`
 
