@@ -15,7 +15,8 @@ The source in Restructured text is in `ABL-spec-prose.rst`
 
 ## Specification in [TLA+](https://lamport.azurewebsites.net/tla/tla.html)
 
-Can be found in `ABL_with_partial_repayments.tla`.
+Can be found in `ABL_with_partial_repayments.tla`, specifies the
+variant with partial repayments
 
 Default values for constants can be found in `MC.tla`
 
