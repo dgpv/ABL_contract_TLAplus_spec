@@ -56,7 +56,7 @@ Set environment variable `TLATOOLSDIR` to the path where
 
 Make sure you have `java` in your `PATH`
 
-run `make` to apply `TLC` checker
+run `make check` to apply `TLC` checker
 
 run `make pdf` to generate PDF file for the TLA+ specification
 (you need pdflatex to be in your `PATH` for that)
