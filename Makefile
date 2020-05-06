@@ -1,6 +1,7 @@
 NAME = ABL_with_partial_repayments
+PROSE_NAME = ABL-spec-prose
 
-all: metadir
+all: build/metadir
 	java -jar ${TLATOOLSDIR}/tla2tools.jar \
 	    -config ${NAME}.cfg \
 	    -workers 1 \
@@ -10,7 +11,7 @@ all: metadir
 	    -deadlock \
 	    MC.tla
 
-pdf: metadir
+pdf: build/metadir
 	java -cp ${TLATOOLSDIR}/tla2tools.jar tla2tex.TLA \
 	    -metadir metadir \
 	    -latexOutputExt pdf \
@@ -19,8 +20,14 @@ pdf: metadir
 	    -shade \
 	    ${NAME}.tla
 
-clean:
-	rm -rf metadir
+prose: build
+	rst2html5.py --math-output="MathJax ${MATHJAX_URL}" ${PROSE_NAME}.rst > build/${PROSE_NAME}.html
 
-metadir:
-	mkdir -p metadir
+clean:
+	rm -rf build
+
+build:
+	mkdir -p build
+
+build/metadir:
+	mkdir -p build/metadir
