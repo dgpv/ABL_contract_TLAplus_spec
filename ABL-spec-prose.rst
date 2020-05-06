@@ -18,6 +18,8 @@ Author: Dmitry Petukhov (https://github.com/dgpv)
 
 Date: 2020-05-04
 
+.. begin-spec
+
 Contract premise
 ^^^^^^^^^^^^^^^^
 
@@ -160,5 +162,7 @@ that:
                 F_{P}*(m+1) & \text{if $ (F_{P}*(m+1) + P \pmod N) \geq B $} \\
                 B & \text{otherwise}
             \end{cases}
+
+.. end-spec
 
 :raw-latex:`\begin{end}`
