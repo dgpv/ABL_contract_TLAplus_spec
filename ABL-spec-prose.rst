@@ -159,7 +159,7 @@ that:
 
     .. math::
         D = \begin{cases}
-                F_{P}*(m+1) & \text{if $ (F_{P}*(m+1) + P \pmod N) \geq B $} \\
+                F_{P}*(m+1) & \text{if $ (F_{P}*(m+1) + P \pmod N) \geq B $} \\[1ex]%
                 B & \text{otherwise}
             \end{cases}
 
