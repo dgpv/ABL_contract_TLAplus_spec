@@ -81,23 +81,25 @@ Asset-Based Loan contract with partial repayments
 
 The repayment is split into :m:`N` installments.
 
-Up to :m:`M` consecutive missed payments is tolerated.
+:m:`M` consecutive missed payments lead to collateral forfeiture.
 
-There are :m:`N+M+1` fixed time periods over which the contract can progress.
+The number of possible steps in the contract is in the
+:m:`[S_{min}, S_{max}]` range [#S_range]_,
+:m:`S_{min} \in [\min\{N, M\}, N + M]; S_{max} \in [\max\{N, M\}, N + M]`
 
-The duration for a single period is pre-agreed, all periods have the same duration.
+The contract can progress over total :m:`S_{max} + 1` time periods,
+:m:`t_{0} \ldots t_{S_{max}}` are the points in time at the beginning
+of each period.
 
 The rates used for calculation of interest or surcharge are pre-agreed:
 
 - :m:`R_{D}` is the rate for regular repayments *due*
 - :m:`R_{E}` is the rate for surcharge on *early* repayments
-- :m:`R_{L(1)} \ldots R_{L(M)}` are the rates for surcharge on *late* repayment: :m:`R_{L(1)}` is applied when one payment is missed, :m:`R_{L(2)}` is applied when two consecutive payments are missed, and so on
-
-:m:`t_{i}` is the point in time at the beginning of each period, :m:`i \in [0, N+M]`
+- :m:`R_{L(1)} \ldots R_{L(M-1)}` are the rates for surcharge on *late* repayment: :m:`R_{L(1)}` is applied when one payment is missed, :m:`R_{L(2)}` is applied when two consecutive payments are missed, and so on
 
 :m:`n` is the number of partial repayments, :m:`n \in [0, N]`
 
-:m:`m` is the number of missed payments, :m:`m \in [0, M+1]`
+:m:`m` is the number of missed payments, :m:`m \in [0, M]`
 
 :m:`B` is the outstanding principal balance
 
@@ -117,17 +119,17 @@ At :m:`t_{0}`:
 Alice is willing to give out :m:`P` to Bob, provided
 that:
 
-- Before each :m:`t_{i}, i > 0` she will receive
+- Before each :m:`t_{s}, s \in [1, S_{max}]` she will receive
   :m:`D + D * R_{D} + L * R_{L(m)}`, and then:
 
     - :m:`n` will be incremented
     - :m:`m` will be reset to 0
     - :m:`B` will be decreased by :m:`D`
 
-- Otherwise
+- Otherwise, :m:`m` will be incremented
 
-    - :m:`m` will be incremented
-    - if :m:`m > M`, she will be able to claim :m:`C`
+- If :m:`m \geq M`, or after :m:`t_{s}, s \geq S_{max}`,
+  she will be able to claim :m:`C`
 
 Alice agrees that before :m:`t_{N-1}`, :m:`B` can be set to 0 if Bob repays
 :m:`B + D * R_{D} + (B-D)*R_{E} + L * R_{L(m)}`
@@ -138,8 +140,8 @@ Bob is willing to freeze :m:`C` for certain period, provided that:
 - When the condition :m:`B=0` is reached during contract execution,
   he can receive :m:`C` back
 
-Bob agrees that Alice can claim :m:`C` for herself if the condition :m:`m > M`
-is reached during contract execution
+Bob agrees that Alice can claim :m:`C` for herself if the condition
+:m:`m \geq M` or :m:`s \geq S_{max}` is reached during contract execution
 
 To enter the contract, Alice and Bob create and cooperatively sign a transaction
 that:
@@ -148,8 +150,16 @@ that:
 - Sends :m:`C`, provided by Bob, to the address of a script
   that enforces the terms of the contract above
 
+.. [#S_range] When :m:`S_{min} = S_{max}`, the contract will always finish in
+    these fixed number of steps (not taking early repayment events into account).
+    This might be desireable because this means that the window of time
+    when Alice will be able to claim the collateral is narrowed,
+    simplifying risk assessment. But this also means that while :m:`M` missed
+    payments lead to collateral forfeiture from :m:`t_{0}`, at :m:`t_{1}` this
+    becomes :m:`M-1`, and at :m:`t_{N-1}` no missing payments will be allowed.
+
 .. [#D_remainder] With presented simple formula, :m:`D` for the last repayment equals
-    :m:`P \pmod N`.
+    :m:`P \bmod N`.
 
     In most cases :m:`P` will likely be much larger than :m:`N`,
     and last repayment will be very small in this case.
@@ -159,7 +169,7 @@ that:
 
     .. math::
         D = \begin{cases}
-                F_{P}*(m+1) & \text{if $ (F_{P}*(m+1) + P \pmod N) \geq B $} \\[1ex]%
+                F_{P}*(m+1) & \text{if $ (F_{P}*(m+1) + P \bmod N) \geq B $} \\[1ex]%
                 B & \text{otherwise}
             \end{cases}
 

@@ -21,6 +21,8 @@ variant with partial repayments
 
 Default values for constants can be found in `MC.tla`
 
+`ABL_with_partial_repayments.pdf` is the spec rendered with `make pdf`
+
 ## Rendering the prose spec
 
 To generate html from `ABL-spec-prose.rst`, you neeed:
