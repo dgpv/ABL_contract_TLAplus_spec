@@ -14,9 +14,7 @@
 Asset-Based Lending smart contract
 ----------------------------------
 
-Author: Dmitry Petukhov (https://github.com/dgpv)
-
-Date: 2020-05-04
+Author: Dmitry Petukhov (https://github.com/dgpv) (C) 2020
 
 .. begin-spec
 
@@ -149,6 +147,38 @@ that:
 - Sends :m:`P`, provided by Alice, to Bob's address
 - Sends :m:`C`, provided by Bob, to the address of a script
   that enforces the terms of the contract above
+
+Examples
+~~~~~~~~
+
+The following scheme illustrates the contract with:
+
+- :m:`P = 10000`
+- :m:`N = 4`, :m:`M = 3`
+- :m:`S_{min}=4, S_{max}=6`
+- :m:`R_{D} = 0.02, R_{E} = 0.001, R_{L} = (0.03, 0.055)`
+  which corresponds to 2%, 0.1%, (3%, 5.5%)
+
+.. image:: ../images/repayment-plan-3x4x7.svg
+    :width: 100%
+
+----
+
+The following scheme illustrates the contract with:
+
+- :m:`P = 10000`
+- :m:`N = 4`, :m:`M = 4`
+- :m:`S_{min}=4, S_{max}=4`
+- :m:`R_{D} = 0.02, R_{E} = 0.001, R_{L} = (0.03, 0.055, 0.08)`
+  which corresponds to (2%, 0.1%, (3%, 5.5%, 8%)).
+
+The layout with :m:`N=M=S_{min}=S_{max}` allows to have the
+collateral forfeiture event to always happen in one particular period.
+
+.. image:: images/repayment-plan-4x4x5.svg
+    :width: 100%
+
+----
 
 .. [#S_range] When :m:`S_{min} = S_{max}`, the contract will always finish in
     these fixed number of steps (not taking early repayment events into account).

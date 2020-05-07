@@ -32,6 +32,7 @@ clean:
 
 build:
 	mkdir -p build
+	ln -s ../images/ build/images
 
 build/metadir:
 	mkdir -p build/metadir
