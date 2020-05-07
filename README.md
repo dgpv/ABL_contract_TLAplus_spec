@@ -7,12 +7,9 @@ for expressive enough covenants.
 
 ## Specification in prose
 
-Can be found in `ABL-spec-prose.pdf` file in this repository.
+Can be found in `ABL-spec-prose.pdf`
 
-Describes the contract in English language.
-
-The source in Restructured text is in `ABL-spec-prose.rst`
-
+The source in Restructured Text is in `ABL-spec-prose.rst`
 
 ## Specification in [TLA+](https://lamport.azurewebsites.net/tla/tla.html)
 

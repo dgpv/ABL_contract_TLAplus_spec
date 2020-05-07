@@ -88,7 +88,7 @@ The number of possible steps in the contract is in the
 :m:`S_{min} \in [\min\{N, M\}, N + M]; S_{max} \in [\max\{N, M\}, N + M]`
 
 The contract can progress over total :m:`S_{max} + 1` time periods,
-:m:`t_{0} \ldots t_{S_{max}}` are the points in time at the beginning
+and :m:`t_{0} \ldots t_{S_{max}}` are the points in time at the beginning
 of each period.
 
 The rates used for calculation of interest or surcharge are pre-agreed:
