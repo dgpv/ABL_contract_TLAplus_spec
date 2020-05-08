@@ -166,7 +166,6 @@ ConsistentProgress ==
            ELSE EarlyRepaymentAmount = RegularRepaymentAmount
     ELSE TRUE
 
-
 ConsistentRepayment ==
     IF state.custody \in {"Debtor>", "Debtor!"}
     THEN /\ state.B = 0
