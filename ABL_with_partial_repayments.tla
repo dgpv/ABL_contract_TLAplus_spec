@@ -47,13 +47,10 @@ ASSUME RateEarly <= RATE_PRECISION
 CONSTANT RatesLate
 ASSUME DOMAIN RatesLate = 1..M-1
 ASSUME \A x \in DOMAIN RatesLate: RatesLate[x] <= RATE_PRECISION
-\* The minumum number of steps in the contract
-CONSTANT S_min
-ASSUME S_min \in Min(N, M)..(N+M)
 \* The maximum number of steps in the contract
-CONSTANT S_max
-ASSUME S_max \in Max(N, M)..(N+M)
-\* The duration of each time period in blocks. S_max periods is the
+CONSTANT S
+ASSUME S \in Max(N, M)+1..(N+M)
+\* The duration of each time period in blocks. S periods is the
 \* max duration of the contract (assuming TimelyEnforcement)
 CONSTANT BLOCKS_IN_PERIOD
 \* Included to make the algorithm closer to the real world,
@@ -91,7 +88,7 @@ PeriodOf(b) == (b - START_BLOCK) \div BLOCKS_IN_PERIOD
 
 StepsTaken == Len(state.path)
 
-InDefault(m, period) == m >= M \/ period >= S_max
+InDefault(m, period) == m >= M \/ period >= S-1
 
 RegularRepaymentAmount == D + ApplyRate(D, RateDue) + ApplyLateRate(L, state.m)
 
@@ -187,8 +184,8 @@ ConsistentPeriods ==
         \* At least one step in each period has to be taken
         \* when enforcement is on-time
         /\ PeriodOf(block) <= StepsTaken + 1
-        \* Can progress over S_max + 1 time periods, period index in 0..S_max
-        /\ PeriodOf(block) <= S_max
+        \* Can progress over S time periods, period index in 0..S-1
+        /\ PeriodOf(block) <= S
     ELSE TRUE
 
 (***************)

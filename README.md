@@ -60,3 +60,8 @@ run `make check` to apply `TLC` checker
 run `make pdf` to generate PDF file for the TLA+ specification
 (you need pdflatex to be in your `PATH` for that)
 
+## Authors and contributors
+
+The contract specification is designed by Dmitry Petukhov
+
+With review and help from Russell O'Connor

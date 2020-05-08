@@ -16,6 +16,8 @@ Asset-Based Lending smart contract
 
 Author: Dmitry Petukhov (https://github.com/dgpv) (C) 2020
 
+With review and help from Russell O'Connor
+
 .. begin-spec
 
 Contract premise
@@ -81,13 +83,10 @@ The repayment is split into :m:`N` installments.
 
 :m:`M` consecutive missed payments lead to collateral forfeiture.
 
-The number of possible steps in the contract is in the
-:m:`[S_{min}, S_{max}]` range [#S_range]_,
-:m:`S_{min} \in [\min\{N, M\}, N + M]; S_{max} \in [\max\{N, M\}, N + M]`
+The contract ends in maximum :m:`S \in [\max\{N, M\}+1, N + M]`
+number of steps.
 
-The contract can progress over total :m:`S_{max} + 1` time periods,
-and :m:`t_{0} \ldots t_{S_{max}}` are the points in time at the beginning
-of each period.
+The concrete value of :m:`S` within this range is pre-agreed.
 
 The rates used for calculation of interest or surcharge are pre-agreed:
 
@@ -108,6 +107,10 @@ to be repaid [#D_remainder]_
 
 :m:`L = \min\{F_{P} * m, B\}` is the amount the repayment is *late* on
 
+The contract can progress over total :m:`S` time periods,
+and :m:`t_{0} \ldots t_{S-1}` are the points in time at the beginning
+of each period.
+
 At :m:`t_{0}`:
 
 - :m:`n = 0`
@@ -117,7 +120,7 @@ At :m:`t_{0}`:
 Alice is willing to give out :m:`P` to Bob, provided
 that:
 
-- Before each :m:`t_{s}, s \in [1, S_{max}]` she will receive
+- Before each :m:`t_{s}, s \in [1, S-1]` she will receive
   :m:`D + D * R_{D} + L * R_{L(m)}`, and then:
 
     - :m:`n` will be incremented
@@ -126,7 +129,7 @@ that:
 
 - Otherwise, :m:`m` will be incremented
 
-- If :m:`m \geq M`, or after :m:`t_{s}, s \geq S_{max}`,
+- If :m:`m \geq M`, or after :m:`t_{s}, s \geq S-1`,
   she will be able to claim :m:`C`
 
 Alice agrees that before :m:`t_{N-1}`, :m:`B` can be set to 0 if Bob repays
@@ -139,7 +142,8 @@ Bob is willing to freeze :m:`C` for certain period, provided that:
   he can receive :m:`C` back
 
 Bob agrees that Alice can claim :m:`C` for herself if the condition
-:m:`m \geq M` or :m:`s \geq S_{max}` is reached during contract execution
+:m:`m \geq M` is reached during contract execution, or after
+:m:`t_{s}, s \geq S-1` point in time is reached
 
 To enter the contract, Alice and Bob create and cooperatively sign a transaction
 that:
@@ -154,8 +158,7 @@ Examples
 The following scheme illustrates the contract with:
 
 - :m:`P = 10000`
-- :m:`N = 4`, :m:`M = 3`
-- :m:`S_{min}=4, S_{max}=6`
+- :m:`N = 4`, :m:`M = 3`, :m:`S=7`
 - :m:`R_{D} = 0.02, R_{E} = 0.001, R_{L} = (0.03, 0.055)`
   which corresponds to 2%, 0.1%, (3%, 5.5%)
 
@@ -167,26 +170,17 @@ The following scheme illustrates the contract with:
 The following scheme illustrates the contract with:
 
 - :m:`P = 10000`
-- :m:`N = 4`, :m:`M = 4`
-- :m:`S_{min}=4, S_{max}=4`
+- :m:`N = 4`, :m:`M = 4`, :m:`S=4`
 - :m:`R_{D} = 0.02, R_{E} = 0.001, R_{L} = (0.03, 0.055, 0.08)`
   which corresponds to (2%, 0.1%, (3%, 5.5%, 8%)).
 
-The layout with :m:`N=M=S_{min}=S_{max}` allows to have the
+The layout with :m:`N=M=S` allows to have the
 collateral forfeiture event to always happen in one particular period.
 
 .. image:: images/repayment-plan-4x4x5.svg
     :width: 100%
 
 ----
-
-.. [#S_range] When :m:`S_{min} = S_{max}`, the contract will always finish in
-    these fixed number of steps (not taking early repayment events into account).
-    This might be desireable because this means that the window of time
-    when Alice will be able to claim the collateral is narrowed,
-    simplifying risk assessment. But this also means that while :m:`M` missed
-    payments lead to collateral forfeiture from :m:`t_{0}`, at :m:`t_{1}` this
-    becomes :m:`M-1`, and at :m:`t_{N-1}` no missing payments will be allowed.
 
 .. [#D_remainder] With presented simple formula, :m:`D` for the last repayment equals
     :m:`P \bmod N`.
