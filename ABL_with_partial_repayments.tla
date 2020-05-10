@@ -4,9 +4,9 @@
 (******************************************************************************)
 
 (******************************************************************************)
-(* This specification is encodes the specification given in prose in the file *)
-(* ABL-spec-prose.rst and some of the one-letter names for the constants      *)
-(* and variables are as the same as in the prose specification.               *)
+(* This specification encodes the description given in prose in the file      *)
+(* ``ABL-spec-prose.rst`` and some of the one-letter names for the constants  *)
+(* and variables are as the same as used in the prose description.            *)
 (* Only the behavor after the start of the contract is specified here.        *)
 (* For example, "Bob has received P" is implied.                              *)
 (******************************************************************************)
@@ -83,7 +83,7 @@ D == LimitByBalance(FracP * (state.m + 1))
 L == LimitByBalance(FracP * state.m)
 
 \* When TimelyEnforcement is in effect, the value returned by PeriodOf
-\* corresponds to 's' in the prose spec
+\* corresponds to 's' in the prose description
 PeriodOf(b) == (b - START_BLOCK) \div BLOCKS_IN_PERIOD
 
 StepsTaken == Len(state.path)
