@@ -5,7 +5,11 @@ for Asset-Based Lending that can be implemented on the blockchain
 platform that uses UTXO model, if the platform has the capabilities
 for expressive enough covenants.
 
-## Specification in prose
+## Description in prose
+
+Aims to describe the contract in a way that links the requirements
+(what participants want to achieve) with the specification
+(how the contract makes that possible)
 
 Can be found in `ABL-spec-prose.pdf`
 
@@ -14,7 +18,11 @@ The source in Restructured Text is in `ABL-spec-prose.rst`
 ## Specification in [TLA+](https://lamport.azurewebsites.net/tla/tla.html)
 
 Can be found in `ABL_with_partial_repayments.tla`, specifies the
-variant with partial repayments
+variant with partial repayments.
+
+This is a high-level specification, it does not specify the details
+how the restrictions required for the contract are implemented
+on the particular blockchain platform
 
 Default values for constants can be found in `MC.tla`
 
