@@ -7,7 +7,7 @@ check: build/metadir
 	java -jar ${TLATOOLSDIR}/tla2tools.jar \
 	    -config ${NAME}.cfg \
 	    -workers 1 \
-	    -metadir metadir \
+	    -metadir build/metadir \
 	    -terse \
 	    -cleanup \
 	    -deadlock \
@@ -15,7 +15,7 @@ check: build/metadir
 
 pdf: build/metadir
 	java -cp ${TLATOOLSDIR}/tla2tools.jar tla2tex.TLA \
-	    -metadir metadir \
+	    -metadir build/metadir \
 	    -latexOutputExt pdf \
 	    -latexCommand pdflatex \
 	    -ptSize 12 \
