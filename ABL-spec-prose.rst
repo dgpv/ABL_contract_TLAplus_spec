@@ -92,6 +92,7 @@ The rates used for calculation of interest or surcharge are pre-agreed:
 
 - :m:`R_{D}` is the rate for regular repayments *due*
 - :m:`R_{E}` is the rate for surcharge on *early* repayments
+- :m:`R_{C}` is the rate for penalty on part of collateral returned on default
 - :m:`R_{L(1)} \ldots R_{L(M-1)}` are the rates for surcharge on *late* repayment: :m:`R_{L(1)}` is applied when one payment is missed, :m:`R_{L(2)}` is applied when two consecutive payments are missed, and so on
 
 :m:`n` is the number of partial repayments, :m:`n \in [0, N]`
@@ -121,7 +122,8 @@ Alice is willing to give out :m:`P` to Bob, provided
 that:
 
 - Before each :m:`t_{s}, s \in [1, S-1]` she will receive
-  :m:`D + D * R_{D} + L * R_{L(m)}`, and then:
+  :m:`A_{reg} = D + D * R_{D} + L * R_{L(m)}` where :m:`A_{reg}`
+  is a regular repayment amount, and then:
 
     - :m:`n` will be incremented
     - :m:`m` will be reset to 0
@@ -133,7 +135,8 @@ that:
   she will be able to claim :m:`C`
 
 Alice agrees that before :m:`t_{N-1}`, :m:`B` can be set to 0 if Bob repays
-:m:`B + D * R_{D} + (B-D)*R_{E} + L * R_{L(m)}`
+:m:`A_{early} = B + D * R_{D} + (B-D)*R_{E} + L * R_{L(m)}` where :m:`A_{early}`
+is an early repayment amount
 
 Bob is willing to freeze :m:`C` for certain period, provided that:
 
@@ -141,9 +144,14 @@ Bob is willing to freeze :m:`C` for certain period, provided that:
 - When the condition :m:`B=0` is reached during contract execution,
   he can receive :m:`C` back
 
-Bob agrees that Alice can claim :m:`C` for herself if the condition
+Bob agrees that Alice can claim a portion :m:`C` for herself if the condition
 :m:`m \geq M` is reached during contract execution, or after
-:m:`t_{s}, s \geq S-1` point in time is reached
+:m:`t_{s}, s \geq S-1` point in time is reached.
+A portion of :m:`C` that Alice can claim in this case will be dependent on the
+amount of principal that was repaid previously, and will equal to
+:m:`C_{forfeit} = \max\{1, \min\{C, C * A_{owed} \div P\}\}`
+where :m:`A_{owed} = \max\{ B, A_{reg} + A_{reg} * R_{C}\}` and Bob will receive
+:m:`C - C_{forfeit}` portion of the collateral back
 
 To enter the contract, Alice and Bob create and cooperatively sign a transaction
 that:
@@ -155,24 +163,26 @@ that:
 Examples
 ~~~~~~~~
 
+Calculated amounts on the presented schemes are rounded down.
+
 The following scheme illustrates the contract with:
 
-- :m:`P = 10000`
+- :m:`P = 10000`, :m:`C = 1000`
 - :m:`N = 4`, :m:`M = 3`, :m:`S=7`
-- :m:`R_{D} = 0.02, R_{E} = 0.001, R_{L} = (0.03, 0.055)`
-  which corresponds to 2%, 0.1%, (3%, 5.5%)
+- :m:`R_{D} = 0.02, R_{E} = 0.001, R_{C} = 0.1, R_{L} = (0.03, 0.055)`,
+  corresponts to 2%, 0.1%, 10%, (3%, 5.5%)
 
-.. image:: ../images/repayment-plan-3x4x7.svg
+.. image:: images/repayment-plan-3x4x7.svg
     :width: 100%
 
 ----
 
 The following scheme illustrates the contract with:
 
-- :m:`P = 10000`
+- :m:`P = 10000`, :m:`C = 1000`
 - :m:`N = 4`, :m:`M = 4`, :m:`S=4`
-- :m:`R_{D} = 0.02, R_{E} = 0.001, R_{L} = (0.03, 0.055, 0.08)`
-  which corresponds to (2%, 0.1%, (3%, 5.5%, 8%)).
+- :m:`R_{D} = 0.02, R_{E} = 0.001, R_{C} = 0.1, R_{L} = (0.03, 0.055, 0.08)`,
+  corresponts to 2%, 0.1%, 10%, (3%, 5.5%, 8%)
 
 The layout with :m:`N=M=S` allows to have the
 collateral forfeiture event to always happen in one particular period.

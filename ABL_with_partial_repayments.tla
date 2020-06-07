@@ -12,14 +12,15 @@
 (******************************************************************************)
 
 (******************************************************************************)
-(* It is natural to model the asset amounts as Natural numbers because in the *)
-(* on-chain contract they are represented in satoshis                         *)
+(* Note that due to limitations of model checker that only supports 32-bit    *)
+(* signed integer numbers, the calculations of the amounts might not be exact *)
+(* due to the rounding inherent in integer calculations                       *)
 (******************************************************************************)
 
-EXTENDS Naturals, Sequences, TLC
+EXTENDS Naturals, Sequences, FiniteSets, TLC
 
-Min(x, y) == IF x < y THEN x ELSE y
-Max(x, y) == IF x > y THEN x ELSE y
+Min(set) == CHOOSE x \in set: \A y \in set : x <= y
+Max(set) == CHOOSE x \in set: \A y \in set : x >= y
 
 \* Rate 1.51% with RATE_PRECISION=10000 will be represented as 151
 RATE_PRECISION == 10000
@@ -30,6 +31,9 @@ RATE_PRECISION == 10000
 \* The amount of the Principal asset
 CONSTANT P
 ASSUME P > 0
+\* The amount of the Collateral asset
+CONSTANT C
+ASSUME C > 0
 \* The number of installments the full repayment is split into
 CONSTANT N
 ASSUME N > 0
@@ -40,6 +44,7 @@ ASSUME M > 0
 \* The rate for regular repayments due
 CONSTANT RateDue
 ASSUME RateDue <= RATE_PRECISION
+\* `^\newpage^'
 \* The rate for surcharge on early repayments
 CONSTANT RateEarly
 ASSUME RateEarly <= RATE_PRECISION
@@ -48,8 +53,10 @@ CONSTANT RatesLate
 ASSUME DOMAIN RatesLate = 1..M-1
 ASSUME \A x \in DOMAIN RatesLate: RatesLate[x] <= RATE_PRECISION
 \* The maximum number of steps in the contract
+CONSTANT RateCollateralPenalty
+ASSUME RateCollateralPenalty <= RATE_PRECISION
 CONSTANT S
-ASSUME S \in Max(N, M)+1..(N+M)
+ASSUME S \in Max({N, M})+1..(N+M)
 \* The duration of each time period in blocks. S periods is the
 \* max duration of the contract (assuming TimelyEnforcement)
 CONSTANT BLOCKS_IN_PERIOD
@@ -76,6 +83,7 @@ LimitByBalance(v) == IF v + P_remainder >= state.B THEN state.B ELSE v
 \* "Fraction of P" is the installment size
 FracP == (P \div N)
 
+\* `^\newpage^'
 \* D is the portion of the balance currently due
 D == LimitByBalance(FracP * (state.m + 1))
 
@@ -92,6 +100,8 @@ InDefault(m, period) == m >= M \/ period >= S-1
 
 RegularRepaymentAmount == D + ApplyRate(D, RateDue) + ApplyLateRate(L, state.m)
 
+CollateralPenalty == ApplyRate(RegularRepaymentAmount, RateCollateralPenalty)
+
 RegularRepayment ==
     state' = [n |-> state.n + 1,
               m |-> 0,
@@ -99,7 +109,7 @@ RegularRepayment ==
               total_repaid |-> state.total_repaid + RegularRepaymentAmount,
               path |-> state.path \o ">",
               at_block |-> block,
-              custody |-> IF state.B = D THEN "Debtor>" ELSE state.custody]
+              custody |-> IF state.B = D THEN [Debtor_R |-> C] ELSE state.custody]
 
 EarlyRepaymentAmount ==
     state.B + ApplyRate(D, RateDue)
@@ -112,36 +122,45 @@ EarlyRepayment ==
                            !.total_repaid = state.total_repaid
                                             + EarlyRepaymentAmount,
                            !.path = state.path \o "!",
-                           !.custody = "Debtor!"]
+                           !.custody = [Debtor_E |-> C]]
 
 Repayment ==
-    /\ ~InDefault(state.m, PeriodOf(block))
-    /\ \/ RegularRepayment
-       \/ /\ EarlyRepaymentAmount > RegularRepaymentAmount
-          /\ EarlyRepayment
+    \/ RegularRepayment
+    \/ /\ EarlyRepaymentAmount > RegularRepaymentAmount
+       /\ EarlyRepayment
 
 RepaymentMissed ==
     IF InDefault(state.m + 1, PeriodOf(block))
-    THEN state' = [state EXCEPT !.m = state.m + 1,
-                                !.path = state.path \o "X",
-                                !.custody = "Creditor"]
-    ELSE state' = [state EXCEPT !.m = state.m + 1,
-                                !.at_block = block,
-                                !.path = state.path \o "v"]
+    THEN LET AmountOwed == Max({ state.B,
+                                 RegularRepaymentAmount + CollateralPenalty } )
+             C_forfeited == Max({ 1, Min({ C, (C * AmountOwed) \div P }) })
+          IN state' = [state
+                       EXCEPT !.m = state.m + 1,
+                              !.path = state.path \o "X",
+                              !.custody = [Creditor |-> C_forfeited,
+                                           Debtor_D |-> C - C_forfeited]]
+    ELSE state' = [state
+                   EXCEPT !.m = state.m + 1,
+                          !.at_block = block,
+                          !.path = state.path \o "v"]
 
 Enforcement ==
-    IF PeriodOf(block) /= PeriodOf(state.at_block)
+    \* More than one repayment can happen on a single period,
+    \* but extra repayments do cover the subsequent periods,
+    \* so we cannot use state.at_block and need to use
+    \* for this check the number of steps taken
+    IF PeriodOf(block) > StepsTaken
     THEN RepaymentMissed
     ELSE UNCHANGED state
 
-\* If the enforcement is not done in time, the number of states to check grows
-\* while all that new states will be duplicates. It can be said that
-\* no enforcement within the period just means that period is now 2x as long,
-\* but the overal state of the contract does not progress.
-\* No-enforcement only hurts the Creditor, and it is the Creditor who is
-\* doing the enforcement, so there's natural incentive for them to enforce.
-TimelyEnforcement == PeriodOf(block) <= PeriodOf(state.at_block) + 1
+\* If it is possible that nothing happens within a period,
+\* the number of states to check grows while all that new states
+\* will be duplicates. It can be said that no action within a period
+\* just means that period is now 2x as long, but the overal state
+\* of the contract does not progress.
+NoIdlePeriods == PeriodOf(block) <= PeriodOf(state.at_block) + 1
 
+\* `^\newpage^'
 (***************)
 (* Invariants  *)
 (***************)
@@ -151,11 +170,15 @@ TypeOK ==
                        "path"}
     /\ state.n \in 0..N
     /\ state.m \in 0..M
-    /\ state.custody \in {"Contract", "Debtor>", "Debtor!", "Creditor"}
+    /\ LET cdom == DOMAIN state.custody
+        IN IF "Creditor" \notin cdom
+           THEN /\ Cardinality(cdom) = 1
+                /\ cdom \subseteq {"Contract", "Debtor_R", "Debtor_E"}
+           ELSE cdom = {"Creditor", "Debtor_D"}
     /\ StepsTaken <= N * M
 
 ConsistentProgress ==
-    IF state.custody = "Contract"
+    IF "Contract" \in DOMAIN state.custody
     THEN
         \* Early repayment available only before N-1 steps are taken
         /\ IF StepsTaken < N-1
@@ -164,29 +187,28 @@ ConsistentProgress ==
     ELSE TRUE
 
 ConsistentRepayment ==
-    IF state.custody \in {"Debtor>", "Debtor!"}
-    THEN /\ state.B = 0
-         /\ state.total_repaid >= P
-         /\ ~InDefault(state.m, PeriodOf(block))
+    IF DOMAIN state.custody \intersect {"Debtor_R", "Debtor_E"} /= {}
+    THEN state.B = 0 /\ state.total_repaid >= P
     ELSE TRUE
 
 ConsistentEnforcement ==
-    IF state.custody = "Creditor" 
-    THEN InDefault(state.m, PeriodOf(block))
-    ELSE TRUE
+    NoIdlePeriods /\ PeriodOf(block) > 0
+    => (InDefault(state.m, PeriodOf(block) - 1)
+        => /\ "Creditor" \in DOMAIN state.custody
+           /\ state.custody["Creditor"] + state.custody["Debtor_D"] = C
+           /\ (state.total_repaid = 0 => state.custody["Creditor"] = C))
 
+\* `^\newpage^'
 ConsistentRemainder ==
     (state.B >= FracP \/ state.B = 0) \* last payment includes P_remainder
 
 ConsistentPeriods ==
-    IF TimelyEnforcement
-    THEN
-        \* At least one step in each period has to be taken
-        \* when enforcement is on-time
-        /\ PeriodOf(block) <= StepsTaken + 1
-        \* Can progress over S time periods, period index in 0..S-1
-        /\ PeriodOf(block) <= S
-    ELSE TRUE
+    NoIdlePeriods
+    => \* At least one step in each period has to be taken
+       \* when enforcement is on-time
+       /\ PeriodOf(block) <= StepsTaken + 1
+       \* Can progress over S time periods, period index in 0..S-1
+       /\ PeriodOf(block) <= S
 
 (***************)
 (* Init & Next *)
@@ -195,11 +217,11 @@ ConsistentPeriods ==
 Init ==
     /\ block = START_BLOCK
     /\ state = [n |-> 0, m |-> 0, B |-> P, at_block |-> block,
-                total_repaid |-> 0, path |-> "", custody |-> "Contract"]
+                total_repaid |-> 0, path |-> "", custody |-> [Contract |-> C]]
 
 Next ==
-    /\ state.custody = "Contract"
-    /\ TimelyEnforcement
+    /\ DOMAIN state.custody = {"Contract"}
+    /\ NoIdlePeriods
     /\ \/ Repayment          /\ UNCHANGED block
        \/ Enforcement        /\ UNCHANGED block
        \/ block' = block + 1 /\ UNCHANGED state

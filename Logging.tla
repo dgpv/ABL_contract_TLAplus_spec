@@ -1,27 +1,30 @@
 ------------------------------ MODULE Logging -------------------------------
 EXTENDS ABL_with_partial_repayments, TLC
 
+LoggingVariants ==
+    \/ /\ "Contract" \in DOMAIN state'.custody
+       /\ state.B /= state'.B
+       /\ Print(<<"RR", \* "Regular repayment"
+                  PeriodOf(block'), state'.n, state'.m, state'.path, state'.B,
+                  RegularRepaymentAmount, state'.total_repaid, state'.custody>>,
+                  TRUE)
+    \/ /\ "Debtor_R" \in DOMAIN state'.custody
+       /\ Print(<<"RF", \* "Regular repayment final"
+                  PeriodOf(block'), state'.n, state'.m, state'.path,
+                  RegularRepaymentAmount, state'.total_repaid, state'.custody>>,
+                  TRUE)
+    \/ /\ "Debtor_E" \in DOMAIN state'.custody
+       /\ Print(<<"ER", \* "Early repayment "
+                  PeriodOf(block'), state'.n, state'.m, state'.path,
+                  EarlyRepaymentAmount, state'.total_repaid, state'.custody>>,
+                  TRUE)
+    \/ /\ "Creditor" \in DOMAIN state'.custody
+       /\ Print(<<"CF", \* Collateral forfeiture
+                  PeriodOf(block'), state'.n, state'.m, state'.path,
+                  RegularRepaymentAmount, CollateralPenalty,
+                  state'.total_repaid, state'.custody>>, TRUE)
 Logging ==
-    \/ /\ state'.custody = "Contract"
-       /\ StepsTaken = PeriodOf(block) \* ignore duplicates
-       /\ state'.B /= state.B
-       /\ Print(<<"RR ", \* "Regular repayment"
-                  PeriodOf(block), state.n, state.m, state.path,
-                  RegularRepaymentAmount>>, TRUE)
-    \/ /\ state'.custody = "Debtor>"
-       /\ StepsTaken = PeriodOf(block) \* ignore duplicates
-       /\ Print(<<"RR_", \* "Regular repayment final"
-                  PeriodOf(block), state.n, state.m, state.path,
-                  RegularRepaymentAmount>>, TRUE)
-    \/ /\ state'.custody = "Debtor!"
-       /\ StepsTaken = PeriodOf(block) \* ignore duplicates
-       /\ Print(<<"ER ", \* "Early repayment "
-                  PeriodOf(block), state.n, state.m, state.path,
-                  EarlyRepaymentAmount>>, TRUE)
-    \/ /\ state'.custody = "Creditor"
-       /\ Print(<<"CF ", \* Collateral forfeiture
-                  PeriodOf(block), state.n, state.m, state.path,
-                  state.total_repaid>>, TRUE)
+    \/ /\ LoggingVariants
     \/ TRUE
 
 =============================================================================
