@@ -25,7 +25,7 @@ pdf: build/metadir
 prose: build/${PROSE_NAME}.html
 
 build/${PROSE_NAME}.html: ${PROSE_NAME}.rst  build
-	rst2html5.py --math-output="MathJax ${MATHJAX_URL}" ${PROSE_NAME}.rst > build/${PROSE_NAME}.html
+	rst2html5.py --footnote-references=superscript --math-output="MathJax ${MATHJAX_URL}" ${PROSE_NAME}.rst > build/${PROSE_NAME}.html
 
 clean:
 	rm -rf build
