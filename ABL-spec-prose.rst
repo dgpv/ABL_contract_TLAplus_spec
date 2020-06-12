@@ -11,8 +11,9 @@
 
 :raw-latex:`\providecommand{\tightlist}{\setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}`
 
+**********************************
 Asset-Based Lending smart contract
-----------------------------------
+**********************************
 
 Author: Dmitry Petukhov (https://github.com/dgpv) (C) 2020
 
@@ -21,7 +22,7 @@ With review and help from Russell O'Connor
 .. begin-spec
 
 Contract premise
-^^^^^^^^^^^^^^^^
+----------------
 
 Alice possesses certain quantity of asset `Principal_Asset` that she does not
 currently utilize, but wants to extract some value from.
@@ -41,7 +42,7 @@ Contract can be terminated at any time by any settlement that is mutually agreed
 by the two parties.
 
 Basic Asset-Based Loan contract
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+-------------------------------
 
 :m:`t_{0}` is the point in time when contract begins
 
@@ -77,7 +78,7 @@ one lump sum, it is often preferable for the principal to be repaid in portions
 over time.
 
 Asset-Based Loan contract with partial repayments
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+-------------------------------------------------
 
 The repayment is split into :m:`N` installments.
 
@@ -161,7 +162,7 @@ that:
   that enforces the terms of the contract above
 
 Examples
-~~~~~~~~
+^^^^^^^^
 
 Calculated amounts on the presented schemes are rounded down.
 
