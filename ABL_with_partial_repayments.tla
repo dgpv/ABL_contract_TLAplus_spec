@@ -100,8 +100,6 @@ InDefault(m, period) == m >= M \/ period >= S-1
 
 RegularRepaymentAmount == D + ApplyRate(D, RateDue) + ApplyLateRate(L, state.m)
 
-CollateralPenalty == ApplyRate(RegularRepaymentAmount, RateCollateralPenalty)
-
 RegularRepayment ==
     state' = [n |-> state.n + 1,
               m |-> 0,
@@ -124,16 +122,22 @@ EarlyRepayment ==
                            !.path = state.path \o "!",
                            !.custody = [Debtor_E |-> C]]
 
+\* `^\newpage^'
 Repayment ==
     \/ RegularRepayment
     \/ /\ EarlyRepaymentAmount > RegularRepaymentAmount
        /\ EarlyRepayment
 
+AmountForCollateralForfeiturePenalty ==
+    Max({ state.B, RegularRepaymentAmount })
+    + ApplyRate(Max({ state.B, RegularRepaymentAmount }),
+                RateCollateralPenalty)
+
 RepaymentMissed ==
     IF InDefault(state.m + 1, PeriodOf(block))
-    THEN LET AmountOwed == Max({ state.B,
-                                 RegularRepaymentAmount + CollateralPenalty } )
-             C_forfeited == Max({ 1, Min({ C, (C * AmountOwed) \div P }) })
+    THEN LET C_forfeited ==
+                Max({ 1, Min({ C, (C * AmountForCollateralForfeiturePenalty)
+                                  \div P }) })
           IN state' = [state
                        EXCEPT !.m = state.m + 1,
                               !.path = state.path \o "X",
@@ -144,14 +148,6 @@ RepaymentMissed ==
                           !.at_block = block,
                           !.path = state.path \o "v"]
 
-Enforcement ==
-    \* More than one repayment can happen on a single period,
-    \* but extra repayments do cover the subsequent periods,
-    \* so we cannot use state.at_block and need to use
-    \* for this check the number of steps taken
-    IF PeriodOf(block) > StepsTaken
-    THEN RepaymentMissed
-    ELSE UNCHANGED state
 
 \* If it is possible that nothing happens within a period,
 \* the number of states to check grows while all that new states
@@ -161,6 +157,15 @@ Enforcement ==
 NoIdlePeriods == PeriodOf(block) <= PeriodOf(state.at_block) + 1
 
 \* `^\newpage^'
+Enforcement ==
+    \* More than one repayment can happen on a single period,
+    \* but extra repayments do cover the subsequent periods,
+    \* so we cannot use state.at_block and need to use
+    \* for this check the number of steps taken
+    IF PeriodOf(block) > StepsTaken
+    THEN RepaymentMissed
+    ELSE UNCHANGED state
+
 (***************)
 (* Invariants  *)
 (***************)
@@ -198,7 +203,6 @@ ConsistentEnforcement ==
            /\ state.custody["Creditor"] + state.custody["Debtor_D"] = C
            /\ (state.total_repaid = 0 => state.custody["Creditor"] = C))
 
-\* `^\newpage^'
 ConsistentRemainder ==
     (state.B >= FracP \/ state.B = 0) \* last payment includes P_remainder
 

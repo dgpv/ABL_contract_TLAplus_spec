@@ -21,7 +21,7 @@ LoggingVariants ==
     \/ /\ "Creditor" \in DOMAIN state'.custody
        /\ Print(<<"CF", \* Collateral forfeiture
                   PeriodOf(block'), state'.n, state'.m, state'.path,
-                  RegularRepaymentAmount, CollateralPenalty,
+                  RegularRepaymentAmount, AmountForCollateralForfeiturePenalty,
                   state'.total_repaid, state'.custody>>, TRUE)
 Logging ==
     \/ /\ LoggingVariants

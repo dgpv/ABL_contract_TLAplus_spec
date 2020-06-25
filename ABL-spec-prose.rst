@@ -66,8 +66,8 @@ that:
 Bob agrees that if :m:`P + I` is not repaid before :m:`t_{1}`,
 Alice can claim :m:`C` for herself.
 
-To enter the contract, Alice and Bob create and cooperatively sign a transaction
-that:
+**Contract start:** To enter the contract, Alice and Bob create
+and cooperatively sign a transaction that:
 
 - Sends :m:`P`, provided by Alice, to Bob's address
 - Sends :m:`C`, provided by Bob, to the address of a script
@@ -146,50 +146,20 @@ Bob is willing to freeze :m:`C` for certain period, provided that:
   he can receive :m:`C` back
 
 Bob agrees that Alice can claim a portion :m:`C` for herself if the condition
-:m:`m \geq M` is reached during contract execution, or after
-:m:`t_{s}, s \geq S-1` point in time is reached.
+:m:`m \geq M` is reached during contract execution, or after the point in time 
+:m:`t_{s}, s \geq S-1` is reached.
 A portion of :m:`C` that Alice can claim in this case will be dependent on the
 amount of principal that was repaid previously, and will equal to
-:m:`C_{forfeit} = \max\{1, \min\{C, C * A_{owed} \div P\}\}`
-where :m:`A_{owed} = \max\{ B, A_{reg} + A_{reg} * R_{C}\}` and Bob will receive
-:m:`C - C_{forfeit}` portion of the collateral back
+:m:`C_{forfeit} = \max\{1, \min\{C, C * A_{penalty} \div P\}\}`
+where :m:`A_{penalty} = \max\{ B, A_{reg}  \} + \max\{ B, A_{reg} \} * R_{C}`
+and Bob will receive :m:`C - C_{forfeit}` portion of the collateral back
 
-To enter the contract, Alice and Bob create and cooperatively sign a transaction
-that:
+**Contract start:** To enter the contract, Alice and Bob create
+and cooperatively sign a transaction that:
 
 - Sends :m:`P`, provided by Alice, to Bob's address
 - Sends :m:`C`, provided by Bob, to the address of a script
   that enforces the terms of the contract above
-
-Examples
-^^^^^^^^
-
-Calculated amounts on the presented schemes are rounded down.
-
-The following scheme illustrates the contract with:
-
-- :m:`P = 10000`, :m:`C = 1000`
-- :m:`N = 4`, :m:`M = 3`, :m:`S=7`
-- :m:`R_{D} = 0.02, R_{E} = 0.001, R_{C} = 0.1, R_{L} = (0.03, 0.055)`,
-  corresponts to 2%, 0.1%, 10%, (3%, 5.5%)
-
-.. image:: images/repayment-plan-3x4x7.svg
-    :width: 100%
-
-----
-
-The following scheme illustrates the contract with:
-
-- :m:`P = 10000`, :m:`C = 1000`
-- :m:`N = 4`, :m:`M = 4`, :m:`S=4`
-- :m:`R_{D} = 0.02, R_{E} = 0.001, R_{C} = 0.1, R_{L} = (0.03, 0.055, 0.08)`,
-  corresponts to 2%, 0.1%, 10%, (3%, 5.5%, 8%)
-
-The layout with :m:`N=M=S` allows to have the
-collateral forfeiture event to always happen in one particular period.
-
-.. image:: images/repayment-plan-4x4x5.svg
-    :width: 100%
 
 ----
 
@@ -207,6 +177,34 @@ collateral forfeiture event to always happen in one particular period.
                 F_{P}*(m+1) & \text{if $ (F_{P}*(m+1) + P \bmod N) \geq B $} \\[1ex]%
                 B & \text{otherwise}
             \end{cases}
+
+Examples
+^^^^^^^^
+
+Calculated amounts on the presented schemes are rounded down.
+
+**Example scheme 1** illustrates the contract with:
+
+- :m:`P = 10000`, :m:`C = 1000`
+- :m:`N = 4`, :m:`M = 3`, :m:`S=7`
+- :m:`R_{D} = 0.02, R_{E} = 0.001, R_{C} = 0.1, R_{L} = (0.03, 0.055)`,
+  corresponts to 2%, 0.1%, 10%, (3%, 5.5%)
+
+.. image:: images/repayment-plan-3x4x7.svg
+    :width: 100%
+
+**Example scheme 2** illustrates the contract with:
+
+- :m:`P = 10000`, :m:`C = 1000`
+- :m:`N = 4`, :m:`M = 4`, :m:`S=4`
+- :m:`R_{D} = 0.02, R_{E} = 0.001, R_{C} = 0.1, R_{L} = (0.03, 0.055, 0.08)`,
+  corresponts to 2%, 0.1%, 10%, (3%, 5.5%, 8%)
+
+The layout with :m:`N=M=S` allows to have the
+collateral forfeiture event to always happen in one particular period.
+
+.. image:: images/repayment-plan-4x4x5.svg
+    :width: 100%
 
 .. end-spec
 
