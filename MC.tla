@@ -14,6 +14,7 @@ const_S == Max({const_N, const_M})+1
 \* const_S == const_N + const_M
 const_BLOCKS_IN_PERIOD == 4
 const_START_BLOCK == 1
+const_C_UNCOND == 1
 
 
 =============================================================================

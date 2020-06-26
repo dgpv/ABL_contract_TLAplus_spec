@@ -109,6 +109,8 @@ to be repaid [#D_remainder]_
 
 :m:`L = \min\{F_{P} * m, B\}` is the amount the repayment is *late* on
 
+:m:`C_{uncond}` is the amount of collateral that is unconditionally forfeited in the event of default
+
 The contract can progress over total :m:`S` time periods,
 and :m:`t_{0} \ldots t_{S-1}` are the points in time at the beginning
 of each period.
@@ -133,7 +135,7 @@ that:
 - Otherwise, :m:`m` will be incremented
 
 - If :m:`m \geq M`, or after :m:`t_{s}, s \geq S-1`,
-  she will be able to claim :m:`C`
+  she will be able to claim certain portion of :m:`C`
 
 Alice agrees that before :m:`t_{N-1}`, :m:`B` can be set to 0 if Bob repays
 :m:`A_{early} = B + D * R_{D} + (B-D)*R_{E} + L * R_{L(m)}` where :m:`A_{early}`
@@ -148,10 +150,11 @@ Bob is willing to freeze :m:`C` for certain period, provided that:
 Bob agrees that Alice can claim a portion :m:`C` for herself if the condition
 :m:`m \geq M` is reached during contract execution, or after the point in time 
 :m:`t_{s}, s \geq S-1` is reached.
+
 A portion of :m:`C` that Alice can claim in this case will be dependent on the
 amount of principal that was repaid previously, and will equal to
-:m:`C_{forfeit} = \max\{1, \min\{C, C * A_{penalty} \div P\}\}`
-where :m:`A_{penalty} = \max\{ B, A_{reg}  \} + \max\{ B, A_{reg} \} * R_{C}`
+:m:`C_{forfeit} = \max\{C_{uncond}, \min\{C, C * A_{penalty} \div P\}\}`,
+where :m:`A_{penalty} = \max\{ B, A_{reg}  \} + \max\{ B, A_{reg} \} * R_{C}`,
 and Bob will receive :m:`C - C_{forfeit}` portion of the collateral back
 
 **Contract start:** To enter the contract, Alice and Bob create

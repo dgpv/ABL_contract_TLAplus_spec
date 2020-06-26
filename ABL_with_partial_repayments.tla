@@ -64,6 +64,9 @@ CONSTANT BLOCKS_IN_PERIOD
 \* where the contract starts at arbitray block. Can be arbitrary Nat value.
 CONSTANT START_BLOCK
 
+CONSTANT C_UNCOND
+ASSUME C_UNCOND <= C
+
 VARIABLES block, state
 
 fullState == <<block, state>>
@@ -80,10 +83,10 @@ ASSUME P_remainder < P \div 100
 \* Include the remainder in the last payment
 LimitByBalance(v) == IF v + P_remainder >= state.B THEN state.B ELSE v
 
+\* `^\newpage^'
 \* "Fraction of P" is the installment size
 FracP == (P \div N)
 
-\* `^\newpage^'
 \* D is the portion of the balance currently due
 D == LimitByBalance(FracP * (state.m + 1))
 
@@ -115,6 +118,7 @@ EarlyRepaymentAmount ==
             + ApplyLateRate(LimitByBalance(FracP * state.m),
                             state.m)
 
+\* `^\newpage^'
 EarlyRepayment ==
     state' = [state EXCEPT !.B = 0,
                            !.total_repaid = state.total_repaid
@@ -122,7 +126,6 @@ EarlyRepayment ==
                            !.path = state.path \o "!",
                            !.custody = [Debtor_E |-> C]]
 
-\* `^\newpage^'
 Repayment ==
     \/ RegularRepayment
     \/ /\ EarlyRepaymentAmount > RegularRepaymentAmount
@@ -136,8 +139,9 @@ AmountForCollateralForfeiturePenalty ==
 RepaymentMissed ==
     IF InDefault(state.m + 1, PeriodOf(block))
     THEN LET C_forfeited ==
-                Max({ 1, Min({ C, (C * AmountForCollateralForfeiturePenalty)
-                                  \div P }) })
+                Max({ C_UNCOND,
+                      Min({ C, (C * AmountForCollateralForfeiturePenalty)
+                               \div P }) })
           IN state' = [state
                        EXCEPT !.m = state.m + 1,
                               !.path = state.path \o "X",
@@ -149,6 +153,7 @@ RepaymentMissed ==
                           !.path = state.path \o "v"]
 
 
+\* `^\newpage^'
 \* If it is possible that nothing happens within a period,
 \* the number of states to check grows while all that new states
 \* will be duplicates. It can be said that no action within a period
@@ -156,7 +161,6 @@ RepaymentMissed ==
 \* of the contract does not progress.
 NoIdlePeriods == PeriodOf(block) <= PeriodOf(state.at_block) + 1
 
-\* `^\newpage^'
 Enforcement ==
     \* More than one repayment can happen on a single period,
     \* but extra repayments do cover the subsequent periods,
@@ -166,6 +170,7 @@ Enforcement ==
     THEN RepaymentMissed
     ELSE UNCHANGED state
 
+\* `^\newpage^'
 (***************)
 (* Invariants  *)
 (***************)
