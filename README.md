@@ -68,6 +68,15 @@ run `make check` to apply `TLC` checker
 run `make pdf` to generate PDF file for the TLA+ specification
 (you need pdflatex to be in your `PATH` for that)
 
+Note that when doing the model checking from the command line,
+if you will need to do an exploration of the state log in case some invariant
+or temporal property is violated, you will need the 1.7.0 of TLA+ tools.
+For earlier versions, you will need to use GUI of TLA+ toolbox.
+
+You might want to look a the [video](https://www.youtube.com/watch?v=pTN3nHvSm84&feature=youtu.be)
+of how to work with trace log exploration from command line.
+There's no specific target in Makefile for this at the moment.
+
 ## Authors and contributors
 
 The contract specification is designed by Dmitry Petukhov
