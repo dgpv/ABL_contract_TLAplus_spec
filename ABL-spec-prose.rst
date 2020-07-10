@@ -164,7 +164,11 @@ and cooperatively sign a transaction that:
 - Sends :m:`C`, provided by Bob, to the address of a script
   that enforces the terms of the contract above
 
+.. end-spec
+
 ----
+
+.. begin-footnotes
 
 .. [#D_remainder] With presented simple formula, :m:`D` for the last repayment equals
     :m:`P \bmod N`.
@@ -180,6 +184,10 @@ and cooperatively sign a transaction that:
                 F_{P}*(m+1) & \text{if $ (F_{P}*(m+1) + P \bmod N) \geq B $} \\[1ex]%
                 B & \text{otherwise}
             \end{cases}
+
+.. end-footnotes
+
+.. begin-examples
 
 Examples
 ^^^^^^^^
@@ -209,6 +217,6 @@ collateral forfeiture event to always happen in one particular period.
 .. image:: images/repayment-plan-4x4x5.svg
     :width: 100%
 
-.. end-spec
+.. end-examples
 
 :raw-latex:`\begin{end}`
