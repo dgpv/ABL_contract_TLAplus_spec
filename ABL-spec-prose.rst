@@ -111,6 +111,13 @@ to be repaid [#D_remainder]_
 
 :m:`C_{uncond}` is the amount of collateral that is unconditionally forfeited in the event of default
 
+:m:`A_{reg} = D + D * R_{D} + L * R_{L(m)}` is the regular repayment amount
+
+:m:`A_{early} = B + D * R_{D} + (B-D)*R_{E} + L * R_{L(m)}` is the early repayment amount
+
+:m:`A_{penalty} = \max\{ B, A_{reg}  \} + \max\{ B, A_{reg} \} * R_{C}` is used for calculating
+collateral distribution in the event of default
+
 The contract can progress over total :m:`S` time periods,
 and :m:`t_{0} \ldots t_{S-1}` are the points in time at the beginning
 of each period.
@@ -124,9 +131,7 @@ At :m:`t_{0}`:
 Alice is willing to give out :m:`P` to Bob, provided
 that:
 
-- Before each :m:`t_{s}, s \in [1, S-1]` she will receive
-  :m:`A_{reg} = D + D * R_{D} + L * R_{L(m)}` where :m:`A_{reg}`
-  is a regular repayment amount, and then:
+- Before each :m:`t_{s}, s \in [1, S-1]` she will receive :m:`A_{reg}`, and then:
 
     - :m:`n` will be incremented
     - :m:`m` will be reset to 0
@@ -137,9 +142,7 @@ that:
 - If :m:`m \geq M`, or after :m:`t_{s}, s \geq S-1`,
   she will be able to claim certain portion of :m:`C`
 
-Alice agrees that before :m:`t_{N-1}`, :m:`B` can be set to 0 if Bob repays
-:m:`A_{early} = B + D * R_{D} + (B-D)*R_{E} + L * R_{L(m)}` where :m:`A_{early}`
-is an early repayment amount
+Alice agrees that before :m:`t_{N-1}`, :m:`B` can be set to 0 if Bob repays :m:`A_{early}`
 
 Bob is willing to freeze :m:`C` for certain period, provided that:
 
@@ -154,7 +157,6 @@ Bob agrees that Alice can claim a portion :m:`C` for herself if the condition
 A portion of :m:`C` that Alice can claim in this case will be dependent on the
 amount of principal that was repaid previously, and will equal to
 :m:`C_{forfeit} = \max\{C_{uncond}, \min\{C, C * A_{penalty} \div P\}\}`,
-where :m:`A_{penalty} = \max\{ B, A_{reg}  \} + \max\{ B, A_{reg} \} * R_{C}`,
 and Bob will receive :m:`C - C_{forfeit}` portion of the collateral back
 
 **Contract start:** To enter the contract, Alice and Bob create
