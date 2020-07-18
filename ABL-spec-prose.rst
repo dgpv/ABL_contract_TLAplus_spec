@@ -93,7 +93,7 @@ The rates used for calculation of interest or surcharge are pre-agreed:
 
 - :m:`R_{D}` is the rate for regular repayments *due*
 - :m:`R_{E}` is the rate for surcharge on *early* repayments
-- :m:`R_{C}` is the rate for penalty on part of collateral returned on default
+- :m:`R_{C}` is the rate for penalty on the part of collateral returned in the event of default
 - :m:`R_{L(1)} \ldots R_{L(M-1)}` are the rates for surcharge on *late* repayment: :m:`R_{L(1)}` is applied when one payment is missed, :m:`R_{L(2)}` is applied when two consecutive payments are missed, and so on
 
 :m:`n` is the number of partial repayments, :m:`n \in [0, N]`
