@@ -203,7 +203,7 @@ Calculated amounts on the presented schemes are rounded down.
 - :m:`R_{D} = 0.02, R_{E} = 0.001, R_{C} = 0.1, R_{L} = (0.03, 0.055)`,
   corresponts to 2%, 0.1%, 10%, (3%, 5.5%)
 
-.. image:: images/repayment-plan-3x4x7.svg
+.. image:: images/repayment-plan-3x4x7.png
     :width: 100%
 
 **Example scheme 2** illustrates the contract with:
@@ -216,7 +216,7 @@ Calculated amounts on the presented schemes are rounded down.
 The layout with :m:`N=M=S` allows to have the
 collateral forfeiture event to always happen in one particular period.
 
-.. image:: images/repayment-plan-4x4x5.svg
+.. image:: images/repayment-plan-4x4x5.png
     :width: 100%
 
 .. end-examples
