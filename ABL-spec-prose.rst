@@ -157,7 +157,7 @@ Bob agrees that Alice can claim a portion :m:`C` for herself if the condition
 A portion of :m:`C` that Alice can claim in this case will be dependent on the
 amount of principal that was repaid previously, and will equal to
 :m:`C_{forfeit} = \max\{C_{uncond}, \min\{C, C * A_{penalty} \div P\}\}`,
-and Bob will receive :m:`C - C_{forfeit}` portion of the collateral back
+and Bob will receive :m:`C - C_{forfeit}` portion of the collateral back [#StepwiseCollateralReturn]_
 
 **Contract start:** To enter the contract, Alice and Bob create
 and cooperatively sign a transaction that:
@@ -186,6 +186,8 @@ and cooperatively sign a transaction that:
                 F_{P}*(m+1) & \text{if $ (F_{P}*(m+1) + P \bmod N) \geq B $} \\[1ex]%
                 B & \text{otherwise}
             \end{cases}
+
+.. [#StepwiseCollateralReturn] There can be a variant of the contract where the portions of the collateral are returned to the Debtor as the partial repayments are made, rather than at the end of the contract. This variant is not included in this particular specification.
 
 .. end-footnotes
 
