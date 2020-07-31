@@ -111,9 +111,9 @@ to be repaid [#D_remainder]_
 
 :m:`C_{uncond}` is the amount of collateral that is unconditionally forfeited in the event of default
 
-:m:`A_{reg} = D + D * R_{D} + L * R_{L(m)}` is the regular repayment amount
+:m:`A_{reg} = D + B * R_{D} + L * R_{L(m)}` is the regular repayment amount
 
-:m:`A_{early} = B + D * R_{D} + (B-D)*R_{E} + L * R_{L(m)}` is the early repayment amount
+:m:`A_{early} = B + B * R_{D} + (B-D)*R_{E} + L * R_{L(m)}` is the early repayment amount
 
 :m:`A_{penalty} = \max\{ B, A_{reg}  \} + \max\{ B, A_{reg} \} * R_{C}` is used for calculating
 collateral distribution in the event of default

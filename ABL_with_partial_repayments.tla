@@ -101,7 +101,7 @@ StepsTaken == Len(state.path)
 
 InDefault(m, period) == m >= M \/ period >= S-1
 
-RegularRepaymentAmount == D + ApplyRate(D, RateDue) + ApplyLateRate(L, state.m)
+RegularRepaymentAmount == D + ApplyRate(state.B, RateDue) + ApplyLateRate(L, state.m)
 
 RegularRepayment ==
     state' = [n |-> state.n + 1,
@@ -113,7 +113,7 @@ RegularRepayment ==
               custody |-> IF state.B = D THEN [Debtor_R |-> C] ELSE state.custody]
 
 EarlyRepaymentAmount ==
-    state.B + ApplyRate(D, RateDue)
+    state.B + ApplyRate(state.B, RateDue)
             + ApplyRate((state.B-D), RateEarly)
             + ApplyLateRate(LimitByBalance(FracP * state.m),
                             state.m)
