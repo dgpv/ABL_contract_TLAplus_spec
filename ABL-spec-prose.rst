@@ -211,11 +211,11 @@ Calculated amounts on the presented schemes are rounded down.
 **Example scheme 2** illustrates the contract with:
 
 - :m:`P = 10000`, :m:`C = 1000`
-- :m:`N = 4`, :m:`M = 4`, :m:`S=4`
+- :m:`N = 4`, :m:`M = 4`, :m:`S=5`
 - :m:`R_{D} = 0.02, R_{E} = 0.001, R_{C} = 0.1, R_{L} = (0.03, 0.055, 0.08)`,
   corresponts to 2%, 0.1%, 10%, (3%, 5.5%, 8%)
 
-The layout with :m:`N=M=S` allows to have the
+The layout with :m:`N=M=(S-1)` allows to have the
 collateral forfeiture event to always happen in one particular period.
 
 .. image:: images/repayment-plan-4x4x5.png
