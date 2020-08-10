@@ -1,9 +1,11 @@
 # Specification for Asset-Based Lending smart contract
 
-This repository contains the specification of the smart contract
+This repository contains the specification of the smart contract state transition table generation
 for Asset-Based Lending that can be implemented on the blockchain
 platform that uses UTXO model, if the platform has the capabilities
 for expressive enough covenants.
+
+The thechnical details of the smart contract is given in the article: https://ruggedbytes.com/articles/ll/
 
 ## Description in prose
 
