@@ -115,8 +115,7 @@ RegularRepayment ==
 EarlyRepaymentAmount ==
     state.B + ApplyRate(state.B, RateDue)
             + ApplyRate((state.B-D), RateEarly)
-            + ApplyLateRate(LimitByBalance(FracP * state.m),
-                            state.m)
+            + ApplyLateRate(L, state.m)
 
 \* `^\newpage^'
 EarlyRepayment ==
