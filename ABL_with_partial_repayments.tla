@@ -78,7 +78,7 @@ ApplyLateRate(v, rn) == IF rn = 0 THEN 0 ELSE ApplyRate(v, RatesLate[rn])
 P_remainder == P % N
 
 \* The Principal amount is assumed to be much larger than number of periods
-ASSUME P_remainder < P \div 100
+ASSUME N < P \div 100
 
 \* Include the remainder in the last payment
 LimitByBalance(v) == IF v + P_remainder >= state.B THEN state.B ELSE v
